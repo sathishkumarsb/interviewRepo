@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Paginationjs example</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <link href="./css/pagination.css" rel="stylesheet" type="text/css">
+  <style type="text/css">
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+
+    table,
+    th,
+    td {
+      border: 1px solid #bbb;
+      text-align: left;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    th {
+      background-color: #ddd;
+    }
+
+    th,
+    td {
+      padding: 5px;
+    }
+
+    /* #wrapper {
+      width: 900px;
+      margin: 20px auto;
+    } */
+    #wrapper {
+      margin: 150px auto;
+      max-width: 960px;
+    }
+
+    .data-container {
+      margin-top: 20px;
+    }
+
+    .data-container ul {
+      padding: 0;
+      margin: 0;
+    }
+
+    .data-container li {
+      margin-bottom: 5px;
+      padding: 5px 10px;
+      background: #eee;
+      color: #666;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .topnav {
+      overflow: hidden;
+      background-color: #333;
+    }
+
+    .topnav a {
+      float: left;
+      color: #f2f2f2;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+      font-size: 17px;
+    }
+
+    .topnav a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+
+    .topnav a.active {
+      background-color: #4CAF50;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topnav">
+    <a class="active" href="#">Projects</a>
+    <a style="float: right;" href="login.html" class="f90-logout-button">Logout</a>
+  </div>
+  <div id="wrapper">
+    <section>
+      <label for="sortby">Sortby: </label><select class='autoselect' align="center" onchange="callAPi('change')">
+        <option value="ilance_projects.project_id">Recent Projects</option>
+        <option value="ilance_category.category_name">Category Name ASC</option>
+        <option value="ilance_users.username">Username Asc</option>
+        <option value="ilance_projects.project_title">Project Title Asc</option>
+      </select>
+      <div class="data-container"></div>
+      <div id="pagination-demo1"></div>
+      <div class="data-container"></div>
+      <div id="pagination-demo2"></div>
+      <div align="right">
+
+      </div>
+    </section>
+  </div>
+
+  <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+  <script src="./pagination.js"></script>
+  <script>
+    $(function () {
+
+      (function (name) {
+        var container = $('#pagination-' + name);
+        container.pagination({
+          dataSource: 'http://localhost:8090/product?sortBy=desc&sortColumn=ilance_projects.project_id',
+          locator: 'data',
+          totalNumberLocator: function (response) {            
+            return response.total;
+          },
+          pageNumber: 1,
+          pageRange: 2,
+          pageSize: 2,
+
+          callback: function (response, pagination) {
+            window.console && console.log(22, response, pagination);
+            var dataHtml = '<table>';
+            dataHtml += '<thead><tr><th>Project Title</th><th>Username</th><th>Category</th></tr></thead>';
+
+            $.each(response, function (index, item) {
+
+              dataHtml += '<tr><td>' + item.project_title + '</td><td>' + item.username + '</td><td>' + item.category_name + '</td></tr>'
+            });
+
+            dataHtml += '</table>';
+
+            container.prev().html(dataHtml);
+          }
+        })
+      })('demo2');
+
+    })
+    function callAPi() {
+      var container = $('#pagination-demo2');
+
+      let sortColumn = $('.autoselect').val()
+      let sortby;
+      if (sortColumn !== 'ilance_projects.project_id') {
+        sortby = 'asc'
+      } else {
+
+        sortby = 'desc'
+      }
+
+      container.pagination({
+        dataSource: "http://localhost:8090/product?sortBy=" + sortby + "&sortColumn=" + sortColumn,
+        locator: 'data',
+        totalNumberLocator: function (response) {
+          return response.total;
+        },
+        pageNumber: 1,
+        pageRange: 2,
+        pageSize: 2,
+
+        callback: function (response, pagination) {
+          window.console && console.log(22, response, pagination);
+          var dataHtml = '<table>';
+          dataHtml += '<thead><tr><th>Project Title</th><th>Username</th><th>Category</th></tr></thead>';
+
+          $.each(response, function (index, item) {
+
+            dataHtml += '<tr><td>' + item.project_title + '</td><td>' + item.username + '</td><td>' + item.category_name + '</td></tr>'
+          });
+
+          dataHtml += '</table>';
+
+          container.prev().html(dataHtml);
+        }
+      })
+    }
+  </script>
+</body>
+
+</html>
